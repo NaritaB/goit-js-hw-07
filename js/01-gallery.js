@@ -4,8 +4,7 @@ import { galleryItems } from "./gallery-items.js";
 const galleryContainer = document.querySelector(".gallery");
 const markup = createGalleryItemsMarkup(galleryItems);
 galleryContainer.insertAdjacentHTML("beforeend", markup);
-galleryContainer.addEventListener('click', onImgClick);
-
+galleryContainer.addEventListener("click", onImgClick);
 
 function createGalleryItemsMarkup(items) {
   return items
@@ -26,10 +25,32 @@ function createGalleryItemsMarkup(items) {
     .join("");
 }
 
-
 function onImgClick(event) {
-    console.log(event.target);
+  event.preventDefault();
+  const datasetSource = event.target.dataset.source;
+  if (!datasetSource) return;
+  instance.element().querySelector("img").src = datasetSource;
+  instance.show();
 }
 
+const instance = basicLightbox.create(`
+    <img src="" width="1280" height="auto">
+    {
+      onShow: (instance) => {
+        window.addEventListener('keydown', onEscKeyPress);
+      },
+      onClose: (instance) => {
+        window.removeEventListener('keydown', onEscKeyPress);
+      },
+    }
+`);
+
+function onEscapePress(event) {
+  if (event.code === "Escape") {
+    instance.close();
+  }
+}
+
+document.addEventListener("keydown", onEscapePress);
 
 console.log(galleryItems);
